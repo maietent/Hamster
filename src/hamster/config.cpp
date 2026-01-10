@@ -7,43 +7,42 @@ namespace Hamster
 
 auto Config::Trim(const std::string &s) -> std::string
 {
-    size_t start = s.find_first_not_of(" \t\r\n");
-    size_t end = s.find_last_not_of(" \t\r\n");
+    auto start = s.find_first_not_of(" \t\r\n");
+    auto end = s.find_last_not_of(" \t\r\n");
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
 auto Config::ParseConfig(const std::string &filename) -> Cfg
 {
-    Cfg cfg;
-
-    std::ifstream file(filename);
+    auto cfg = Cfg{};
+    auto file = std::ifstream(filename);
     if (!file.is_open())
     {
         return cfg;
     }
 
-    std::string line;
+    auto line = std::string{};
     Step* currentStep = nullptr;
-    bool inEntry = false;
+    auto inEntry = false;
 
     while (std::getline(file, line))
     {
         line = Trim(line);
         if (line.empty() || line[0] == '#') continue;
 
-        size_t eqPos = line.find('=');
+        auto eqPos = line.find('=');
         if (eqPos != std::string::npos && !inEntry && line.rfind("Step:", 0) != 0)
         {
-            std::string key = Trim(line.substr(0, eqPos));
-            std::string value = Trim(line.substr(eqPos + 1));
+            auto key = Trim(line.substr(0, eqPos));
+            auto value = Trim(line.substr(eqPos + 1));
             cfg.variables[key] = value;
             continue;
         }
 
         if (line.rfind("Step:", 0) == 0)
         {
-            std::string stepName = Trim(line.substr(5));
-            Step step;
+            auto stepName = Trim(line.substr(5));
+            auto step = Step{};
             step.name = stepName;
             cfg.steps[stepName] = step;
             currentStep = &cfg.steps[stepName];

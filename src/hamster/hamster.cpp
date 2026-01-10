@@ -23,33 +23,33 @@ auto Hamster::ParseArgs(const std::vector<std::string>& args) -> bool
 {
     if (args.empty())
     {
-        LogError("No arguments passed");
-        return false;
+        LogError("No arguments passed, continuing");
+        return true;
     }
 
     // this can 100% be done better
-    size_t index = 0;
+
+    // if it starts with - then its an arg for the app itself
+    // if it doesnt, its an arg for the building
     for (const auto& arg : args)
     {
-        index++;
+        if (arg.empty())
+            continue;
 
-        if (arg == "-a")
+        if (arg[0] == '-')
         {
-            Log("-a passed");
-        }
-        else if (arg == "-b")
-        {
-            Log("-b passed");
-        }
-
-        else if (arg == "-c")
-        {
-            Log("-c passed");
+            if (arg == "-make")
+                Log("TODO: autogen conf file and prompt user", arg);
+            else
+            {
+                LogError("Unknown argument: {}", arg);
+                return false;
+            }
         }
         else
         {
-            LogError("Unknown argument: {}", arg);
-            return false;
+            Log("Build argument: {}", arg);
+            BuildArgs.push_back(arg);
         }
     }
 
@@ -66,8 +66,16 @@ auto Hamster::Initialize(const std::vector<std::string>& args) -> bool
         return false;
     }
 
+    Cfg cfg = config_inst.ParseConfig("hamster.conf");
+    if (cfg.variables.empty() && cfg.steps.empty() && cfg.entry_commands.empty())
+    {
+        LogError("Failed to parse hamster.conf");
+        return false;
+    }
+
     return true;
 }
+
 
 auto Hamster::Deinitialize() -> void
 {

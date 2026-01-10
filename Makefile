@@ -41,10 +41,10 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 run: release
-	-./$(RELEASE_BIN) $(ARGS) || true
+	@cd $(BUILD_DIR) && ./Hamster $(ARGS) || true
 
 run-debug: debug
-	-./$(DEBUG_BIN) $(ARGS) || true
+	@cd $(BUILD_DIR) && ./HamsterD $(ARGS) || true
 
 clean:
 	rm -rf $(BUILD_DIR)

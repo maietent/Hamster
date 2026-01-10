@@ -41,10 +41,10 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 run: release
-	-./$(RELEASE_BIN) || true
+	-./$(RELEASE_BIN) $(ARGS) || true
 
 run-debug: debug
-	-./$(DEBUG_BIN) || true
+	-./$(DEBUG_BIN) $(ARGS) || true
 
 clean:
 	rm -rf $(BUILD_DIR)

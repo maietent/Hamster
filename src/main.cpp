@@ -1,7 +1,7 @@
-#include <print>
+#include "hamster/hamster.hpp"
 
 auto main() -> int
 {
-    std::println("init");
+    Hamster app{};
     return 0;
 }

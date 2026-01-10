@@ -8,7 +8,7 @@ BUILD_DIR := built
 RELEASE_BIN := $(BUILD_DIR)/Hamster
 DEBUG_BIN := $(BUILD_DIR)/HamsterD
 
-SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 
 WARNINGS := -Wall -Wextra -Wpedantic
 INCLUDES := -I$(INC_DIR)

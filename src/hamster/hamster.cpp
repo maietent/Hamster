@@ -1,8 +1,12 @@
 #include "hamster/hamster.hpp"
+#include "utils/log.hpp"
+
+namespace Hamster
+{
 
 Hamster::Hamster()
 {
-    std::println("Constructor called");
+    log("Constructor called");
     if (!Initialize())
     {
         throw std::runtime_error("Hamster failed to initialize");
@@ -11,17 +15,19 @@ Hamster::Hamster()
 
 Hamster::~Hamster()
 {
-    std::println("Deconstructor called");
+    log("Deconstructor called");
     Deinitialize();
 }
 
-bool Hamster::Initialize()
+auto Hamster::Initialize()   -> bool
 {
-    std::println("Initialize called");
+    log("Initialize called");
     return true;
 }
 
-void Hamster::Deinitialize()
+auto Hamster::Deinitialize() -> void
 {
-    std::println("Deinitialize called");
+    log("Deinitialize called");
+}
+
 }

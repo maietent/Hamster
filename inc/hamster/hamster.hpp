@@ -1,5 +1,7 @@
 #pragma once
-#include <print>
+
+namespace Hamster
+{
 
 class Hamster
 {
@@ -7,6 +9,8 @@ public:
     Hamster();
     ~Hamster();
 private:
-    bool Initialize();
-    void Deinitialize();
+    auto Initialize()   -> bool;
+    auto Deinitialize() -> void;
 };
+
+}

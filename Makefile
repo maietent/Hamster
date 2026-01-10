@@ -4,11 +4,13 @@ CXXSTD := -std=c++23
 SRC_DIR := src
 INC_DIR := inc
 BUILD_DIR := built
+OBJ_DIR := $(BUILD_DIR)/obj
 
 RELEASE_BIN := $(BUILD_DIR)/Hamster
 DEBUG_BIN := $(BUILD_DIR)/HamsterD
 
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
 WARNINGS := -Wall -Wextra -Wpedantic
 INCLUDES := -I$(INC_DIR)
@@ -20,22 +22,29 @@ all: release
 
 release: $(RELEASE_BIN)
 
-$(RELEASE_BIN): $(SRCS) | $(BUILD_DIR)
+$(RELEASE_BIN): $(OBJS) | $(BUILD_DIR)
 	$(CXX) $(CXXSTD) $(WARNINGS) $(INCLUDES) $(RELEASE_FLAGS) $^ -o $@
 
 debug: $(DEBUG_BIN)
 
-$(DEBUG_BIN): $(SRCS) | $(BUILD_DIR)
+$(DEBUG_BIN): $(OBJS) | $(BUILD_DIR)
 	$(CXX) $(CXXSTD) $(WARNINGS) $(INCLUDES) $(DEBUG_FLAGS) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXSTD) $(WARNINGS) $(INCLUDES) -c $< -o $@
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 run: release
 	./$(RELEASE_BIN)
 
 run-debug: debug
 	./$(DEBUG_BIN)
-
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
 
 clean:
 	rm -rf $(BUILD_DIR)

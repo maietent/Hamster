@@ -2,6 +2,6 @@
 
 auto main() -> int
 {
-    Hamster app{};
+    Hamster::Hamster app{};
     return 0;
 }

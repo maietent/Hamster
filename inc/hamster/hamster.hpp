@@ -1,15 +1,18 @@
 #pragma once
 
+#include <vector>
+#include <string>
+
 namespace Hamster
 {
 
 class Hamster
 {
 public:
-    Hamster();
+    Hamster(const std::vector<std::string>& args);
     ~Hamster();
 private:
-    auto Initialize()   -> bool;
+    auto Initialize(const std::vector<std::string>& args) -> bool;
     auto Deinitialize() -> void;
 };
 

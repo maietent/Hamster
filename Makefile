@@ -12,7 +12,7 @@ DEBUG_BIN := $(BUILD_DIR)/HamsterD
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-WARNINGS := -Wall -Wextra -Wpedantic
+WARNINGS := -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments
 INCLUDES := -I$(INC_DIR)
 
 RELEASE_FLAGS := -O2 -flto
@@ -41,10 +41,10 @@ $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 run: release
-	./$(RELEASE_BIN)
+	-./$(RELEASE_BIN) || true
 
 run-debug: debug
-	./$(DEBUG_BIN)
+	-./$(DEBUG_BIN) || true
 
 clean:
 	rm -rf $(BUILD_DIR)

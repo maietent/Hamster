@@ -1,7 +1,9 @@
 #include "hamster/hamster.hpp"
 
-auto main() -> int
+auto main(int argc, char* argv[]) -> int
 {
-    Hamster::Hamster app{};
+    std::vector<std::string> args(argv + 1, argv + argc); // arguments!
+
+    Hamster::Hamster app{args};
     return 0;
 }

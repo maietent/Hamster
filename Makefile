@@ -4,7 +4,7 @@ CXXSTD := -std=c++23
 SRC_DIR := src
 INC_DIR := inc
 BUILD_DIR := built
-OBJ_DIR := $(BUILD_DIR)/obj
+OBJ_DIR := obj
 
 RELEASE_BIN := $(BUILD_DIR)/Hamster
 DEBUG_BIN := $(BUILD_DIR)/HamsterD

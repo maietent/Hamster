@@ -12,6 +12,7 @@ public:
     Hamster(const std::vector<std::string>& args);
     ~Hamster();
 private:
+    auto ParseArgs(const std::vector<std::string>& args) -> bool;
     auto Initialize(const std::vector<std::string>& args) -> bool;
     auto Deinitialize() -> void;
 };

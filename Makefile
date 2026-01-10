@@ -12,7 +12,7 @@ DEBUG_BIN := $(BUILD_DIR)/HamsterD
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-WARNINGS := -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments
+WARNINGS := -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadic-macro-arguments -Wno-unused-but-set-variable
 INCLUDES := -I$(INC_DIR)
 
 RELEASE_FLAGS := -O2 -flto

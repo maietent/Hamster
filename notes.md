@@ -5,48 +5,44 @@ define user defined "steps" for the build
 
 example config file:  
 ```
-Compiler = g++;
-Linker = g++;
+compiler = g++;
+linker = g++;
 
-Warnings = -Wall;
+warnings = -Wall;
+compiler_args = -O2;
 
-Include = include/;
-SRC = src/;
+src_dir = src/;
+include_dir = include/;
+bin_dir = bin/;
+output = myprogram;
 
-Bin = bin/;
-Output = myprogram;
-
-CompilerArgs = -O2;
-
-Step: compile
-{
-    compile SRC into bin/ with CompilerArgs, Warnings, Include;
+step compile {
+    compile src_dir into bin_dir
+        with compiler_args, warnings, include_dir;
 }
 
-Step: link
-{
-    link all objects in bin/ into Output with LinkerArgs;
+step link {
+    link all objects in bin_dir
+        into output;
 }
 
-Step: run_scripts
-{
+step run_scripts {
     run scripts/script1.sh;
     run scripts/script2.sh;
 }
 
-Build
-{
-    run-step compile();
-    run-step link();
+build default {
+    run compile;
+    run link;
 }
 
-Entry
-{
-    run-build;
+entry main {
+    run default;
 
-    if "run" in Args: # args is gonna be builtin var with the arguments passed into hamster
+    if "run" in args {
         print("running");
-        run-cmd "./my_program";
+        run_cmd "./myprogram";
+    }
 }
 
 ```  

@@ -1,4 +1,5 @@
 #include "hamster/config.hpp"
+#include "utils/utils.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -14,24 +15,32 @@ auto Config::Trim(const std::string &s) -> std::string
 
 auto Config::ParseConfig(const std::string &filename) -> Cfg
 {
-    auto cfg = Cfg{};
-    auto file = std::ifstream(filename);
+    Cfg cfg{};
+    std::ifstream file(filename);
     if (!file.is_open())
-    {
         return cfg;
-    }
 
-    auto line = std::string{};
-    Step* currentStep = nullptr;
-    auto inEntry = false;
+    enum class BlockType { None, Step, Build, Entry };
 
+    BlockType currentType = BlockType::None;
+    std::vector<std::string>* currentCmds = nullptr;
+
+    std::string line;
     while (std::getline(file, line))
     {
         line = Trim(line);
-        if (line.empty() || line[0] == '#') continue;
+        if (line.empty() || line[0] == '#')
+            continue;
+
+        if (line == "}")
+        {
+            currentType = BlockType::None;
+            currentCmds = nullptr;
+            continue;
+        }
 
         auto eqPos = line.find('=');
-        if (eqPos != std::string::npos && !inEntry && line.rfind("Step:", 0) != 0)
+        if (currentType == BlockType::None && eqPos != std::string::npos)
         {
             auto key = Trim(line.substr(0, eqPos));
             auto value = Trim(line.substr(eqPos + 1));
@@ -39,38 +48,131 @@ auto Config::ParseConfig(const std::string &filename) -> Cfg
             continue;
         }
 
-        if (line.rfind("Step:", 0) == 0)
+        if (line.rfind("step ", 0) == 0)
         {
-            auto stepName = Trim(line.substr(5));
-            auto step = Step{};
-            step.name = stepName;
-            cfg.steps[stepName] = step;
-            currentStep = &cfg.steps[stepName];
-            inEntry = false;
+            auto name = Trim(line.substr(5));
+            if (!name.empty() && name.back() == '{')
+                name.pop_back();
+
+            Step step{};
+            step.name = Trim(name);
+            cfg.steps[step.name] = step;
+
+            currentType = BlockType::Step;
+            currentCmds = &cfg.steps[step.name].cmds;
             continue;
         }
 
-        if (line.rfind("Entry", 0) == 0)
+        if (line.rfind("build ", 0) == 0)
         {
-            inEntry = true;
-            currentStep = nullptr;
+            auto name = Trim(line.substr(6));
+            if (!name.empty() && name.back() == '{')
+                name.pop_back();
+
+            Build build{};
+            build.name = Trim(name);
+            cfg.builds[build.name] = build;
+
+            currentType = BlockType::Build;
+            currentCmds = &cfg.builds[build.name].cmds;
             continue;
         }
 
-        if (line == "{" || line == "}") continue;
-
-        if (currentStep)
+        if (line.rfind("entry ", 0) == 0)
         {
-            currentStep->cmds.push_back(line);
-        }
-        else if (inEntry)
-        {
-            cfg.entry_commands.push_back(line);
+            if (!cfg.entrypoint.empty())
+            {
+                continue;
+            }
+
+            auto name = Trim(line.substr(6));
+            if (!name.empty() && name.back() == '{')
+                name.pop_back();
+
+            currentType = BlockType::Entry;
+            currentCmds = &cfg.entrypoint;
+            continue;
         }
 
+        if (line == "{")
+            continue;
+
+        if (currentCmds)
+        {
+            currentCmds->push_back(line);
+        }
     }
 
     return cfg;
+}
+
+auto Config::MakeConfig() -> bool
+{
+    auto config = R"(# variables
+
+compiler = g++;
+linker = g++;
+
+warnings = -Wall;
+compiler_args = -O2;
+
+src_dir = src/;
+include_dir = include/;
+bin_dir = bin/;
+output = myprogram;
+
+# steps
+
+step compile
+{
+    compile src_dir into bin_dir
+        with compiler_args, warnings, include_dir;
+}
+
+step link
+{
+    link all objects in bin_dir
+        into output;
+}
+
+step run_scripts
+{
+    run scripts/script1.sh;
+    run scripts/script2.sh;
+}
+
+build default
+{
+    run compile;
+    run link;
+}
+
+# entrypoint
+
+entry main
+{
+    run default;
+    run run_scripts;
+
+    if "run" in args
+    {
+        print("running");
+        run_cmd "./myprogram";
+    }
+}
+)";
+
+    std::ofstream out("hamster.conf");
+    if (!out)
+    {
+        LogError("Failed to create config");
+        return false;
+    }
+
+    out << config;
+    out.close();
+
+    return true;
 }
 
 }

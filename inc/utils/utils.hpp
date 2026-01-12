@@ -196,7 +196,6 @@ inline void init_logging(bool allocate_console = false, bool to_file = false,
 }
 
 } // namespace Logger
-#ifdef _DEBUG
 
 #ifdef _WIN32
 #define Log(fmt, ...)                                                          \
@@ -220,11 +219,4 @@ inline void init_logging(bool allocate_console = false, bool to_file = false,
         "ERROR", Logger::RED, fmt, ##__VA_ARGS__)
 #endif
 
-#else
-
-#define Log(fmt, ...)
-#define LogWarn(fmt, ...)
-#define LogError(fmt, ...)
-
-#endif
 /* END OF LOGGER */

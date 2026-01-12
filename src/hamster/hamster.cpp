@@ -39,7 +39,10 @@ auto Hamster::ParseArgs(const std::vector<std::string>& args) -> bool
         if (arg[0] == '-')
         {
             if (arg == "-make")
-                Log("TODO: autogen conf file and prompt user", arg);
+            {
+                config_inst.MakeConfig();
+                Log("Created default config");
+            }
             else
             {
                 LogError("Unknown argument: {}", arg);
@@ -67,10 +70,42 @@ auto Hamster::Initialize(const std::vector<std::string>& args) -> bool
     }
 
     Cfg cfg = config_inst.ParseConfig("hamster.conf");
-    if (cfg.variables.empty() && cfg.steps.empty() && cfg.entry_commands.empty())
+    if (cfg.variables.empty() && cfg.steps.empty() && cfg.builds.empty() && cfg.entrypoint.empty())
     {
         LogError("Failed to parse hamster.conf");
         return false;
+    }
+
+    Log("Variables:");
+    for (const auto& [key, value] : cfg.variables)
+    {
+        Log("  {} = {}", key.c_str(), value.c_str());
+    }
+
+    Log("Steps:");
+    for (const auto& [name, step] : cfg.steps)
+    {
+        Log("  step {}", name.c_str());
+        for (const auto& cmd : step.cmds)
+        {
+            Log("    {}", cmd.c_str());
+        }
+    }
+
+    Log("Builds:");
+    for (const auto& [name, build] : cfg.builds)
+    {
+        Log("  build {}", name.c_str());
+        for (const auto& cmd : build.cmds)
+        {
+            Log("    {}", cmd.c_str());
+        }
+    }
+
+    Log("Entrypoint:");
+    for (const auto& cmd : cfg.entrypoint)
+    {
+        Log("    {}", cmd.c_str());
     }
 
     return true;

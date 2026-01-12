@@ -16,7 +16,7 @@ WARNINGS := -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadi
 INCLUDES := -I$(INC_DIR)
 
 RELEASE_FLAGS := -O2 -flto
-DEBUG_FLAGS := -g -O0
+DEBUG_FLAGS := -g -O0 -D_DEBUG
 
 all: release
 

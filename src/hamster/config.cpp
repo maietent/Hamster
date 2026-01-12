@@ -67,6 +67,7 @@ auto Config::ParseConfig(const std::string &filename) -> Cfg
         {
             cfg.entry_commands.push_back(line);
         }
+
     }
 
     return cfg;

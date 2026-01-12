@@ -16,7 +16,8 @@ WARNINGS := -Wall -Wextra -Wpedantic -Wno-unused-parameter -Wno-gnu-zero-variadi
 INCLUDES := -I$(INC_DIR)
 
 RELEASE_FLAGS := -O2 -flto
-DEBUG_FLAGS := -g -O0 -D_DEBUG
+DEBUG_FLAGS := -g -O0 -DDEBUG
+DEPFLAGS := -MMD -MP
 
 all: release
 
@@ -32,7 +33,7 @@ $(DEBUG_BIN): $(OBJS) | $(BUILD_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXSTD) $(WARNINGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXSTD) $(WARNINGS) $(INCLUDES) $(DEPFLAGS) -c $< -o $@
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -48,5 +49,8 @@ run-debug: debug
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+DEPS := $(OBJS:.o=.d)
+-include $(DEPS)
 
 .PHONY: all release debug run run-debug clean
